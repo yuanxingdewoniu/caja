@@ -3,8 +3,12 @@ NULL =
 xml_in_files = caja.xml.in
 xml_files = $(xml_in_files:.xml.in=.xml)
 
-%.xml: %.xml.in
+$(xml_files): $(xml_in_files)
+if USE_NLS
 	$(AM_V_GEN) GETTEXTDATADIR=$(top_srcdir) $(MSGFMT) --xml --template $< -d $(top_srcdir)/po -o $@
+else
+	$(AM_V_GEN) cp -f $< $@
+endif
 
 desktopdir = $(datadir)/applications
 desktop_DATA = \
@@ -18,12 +22,17 @@ desktop_DATA = \
 	mate-network-scheme.desktop
 desktop_in_files = $(desktop_DATA:.desktop=.desktop.in)
 desktop_in_in_files = $(desktop_DATA:.desktop=.desktop.in.in)
+
 %.desktop.in: %.desktop.in.in
-	$(AM_V_GEN) GETTEXTDATADIR=$(top_srcdir) $(MSGFMT) --desktop \
-		--keyword --keyword=Name --keyword=GenericName --keyword=Comment --keyword=Keywords \
-		--template $< -d $(top_srcdir)/po -o $@
-%.desktop: %.desktop.in
 	$(AM_V_GEN) sed -e 's|@bindir[@]|$(bindir)|g' $< > $@
+%.desktop: %.desktop.in
+if USE_NLS
+	$(AM_V_GEN) GETTEXTDATADIR=$(top_srcdir) $(MSGFMT) --desktop \
+		--keyword= --keyword=Name --keyword=GenericName --keyword=Comment --keyword=Keywords \
+		--template $< -d $(top_srcdir)/po -o $@
+else
+	$(AM_V_GEN) sed -e '/^# Translators/d' $< > $@
+endif
 
 mimedir = $(datadir)/mime/packages
 mime_DATA = $(xml_files)
@@ -37,7 +46,6 @@ org.mate.freedesktop.FileManager1.service: org.mate.freedesktop.FileManager1.ser
 	$(AM_V_GEN) sed -e "s|\@bindir\@|$(bindir)|" $< > $@
 
 cajadatadir = $(datadir)/caja
-cajadata_in_files = browser.xml.in
 cajadata_DATA = \
 	browser.xml \
 	caja-extras.placeholder  \
@@ -55,14 +63,18 @@ cajadata_DATA = \
 appdatadir = $(datadir)/metainfo
 appdata_in_files = caja.appdata.xml.in
 appdata_DATA = $(appdata_in_files:.xml.in=.xml)
+
 $(appdata_DATA): $(appdata_in_files)
+if USE_NLS
 	$(AM_V_GEN) $(MSGFMT) --xml --template $< -d $(top_srcdir)/po -o $@
+else
+	$(AM_V_GEN) cp -f $< $@
+endif
 
 EXTRA_DIST = $(cajadata_DATA) \
 	caja.css \
 	freedesktop-dbus-interfaces.xml \
 	$(xml_in_files) \
-	$(cajadata_in_files) \
 	$(desktop_in_files) \
 	$(desktop_in_in_files) \
 	$(service_in_files) \

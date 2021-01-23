@@ -1,7 +1,10 @@
 include $(top_srcdir)/Makefile.shared
 
+if USE_NLS
+PO_SUBDIR = po
+endif
+
 SUBDIRS = \
-	po \
 	eel \
 	libcaja-extension \
 	mate-submodules \
@@ -11,6 +14,7 @@ SUBDIRS = \
 	data \
 	icons \
 	docs \
+	$(PO_SUBDIR) \
 	$(NULL)
 
 EXTRA_DIST = \

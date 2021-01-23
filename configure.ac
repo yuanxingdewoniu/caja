@@ -86,6 +86,7 @@ GETTEXT_PACKAGE=caja
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",
     [the gettext translation domain])
+AM_CONDITIONAL([USE_NLS], [test "x${USE_NLS}" = "xyes"])
 
 AH_TEMPLATE([ENABLE_INSTALLER])
 AH_TEMPLATE([ENABLE_NLS])
@@ -305,6 +306,7 @@ caja-$VERSION:
     warning flags:                ${WARN_CFLAGS}
     xmp support:                  $msg_xmp
     PackageKit support:           $msg_packagekit
+    gettext support:              $USE_NLS
     Self check:                   $msg_self_check
 
     caja-extension documentation: ${enable_gtk_doc}
